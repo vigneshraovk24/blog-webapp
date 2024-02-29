@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}LOGIN{% endblock %}
+{% block style_link %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
+{% block content %}
+    {% include "nav_bar.html" %}
+    <form  method="POST" class="container">
+    <div class="mb-3 ">
+        {{ form.hidden_tag() }}
+        {% for message in get_flashed_messages() %}
+
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <br>
+        {% endfor %}
+    <h4 class="text-center">LOGIN</h4>
+      {{ form.email.label(class="form-label") }} {{ form.email(class="form-control") }}
+    {{ form.password.label(class="form-label") }} {{ form.password(class="form-control") }}
+    <small class="text-muted">Don't have an account? <a href="{{ url_for("signup") }}">Signup</a></small> <br>
+    <!--{{ form.submit(class="btn btn-primary mt-3") }}-->
+    <button  onclick="login();" class="btn btn-primary mt-3">Login</button>
+    </div>
+
+
+</form>
+{% endblock %}

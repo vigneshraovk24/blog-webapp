@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ thread.title }}{% endblock %}
+{% block style_link %}
+    <link rel="stylesheet" href="{{ url_for("static",filename="thread_post_style.css") }}">
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    {# nav bar   #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for("index") }}">VBlog</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-success" aria-current="page" href="{{ url_for("discussion") }}">DISCUSSION</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("create_forum") }}">ASK QUESTION</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("logout") }}">LOGOUT</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("login") }}">LOGIN</a>
+                        </li>
+                    {% endif %}
+
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {# nav bar end   #}
+    <div class="col-lg-10 col-md-10 mx-auto mt-2">
+        {% for message in get_flashed_messages() %}
+
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <br>
+        {% endfor %}
+        <div style="margin-top: 20px;">
+            <span class="d-flex justify-content-between"><span><img src="{{ thread.thread_author.email | gravatar(size=40) }}" alt="" style="border-radius: 50%;"> <h5 style="display: inline;text-transform: uppercase;">{{ thread.thread_author.name }}</h5></span> <small class="fs-5">created on {{ thread.date }}</small></span>
+            <div style="text-align: justify;margin-top: 10px;">
+                <h3>{{ thread.title }}</h3>
+                {{ thread.brief|safe }}
+                <small>{{ thread.hashtags }}</small>
+            </div>
+
+        </div>
+        {% if current_user.is_authenticated %}
+            <button  onclick="hide();" id="show_btn" class="btn btn-primary mt-3">Reply</button>
+            {% if current_user.id == thread.author_id %}
+                <div class="d-inline">
+                    <a href="{{ url_for("edit_thread",thread_id=thread.id) }}" class="text-decoration-none text-black">Edit
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                        </svg></a>
+                </div>
+
+            {% endif %}
+        {% else %}
+            <small>To comment,please <a href="{{ url_for("login") }}">login</a></small>
+        {% endif %}
+
+        <div id="comments_section">
+            <h3>Reply</h3>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {{ form.comment_text(class="form-control") }}
+                <button onclick="hide()" class="btn btn-outline-secondary mt-3">Cancel</button>
+                {{ form.submit(class="btn btn-secondary mt-3") }}
+            </form>
+            {{ ckeditor.load(pkg_type="basic") }}
+            {{ ckeditor.config(name="comment_text") }}
+        </div>
+        <div class="mt-3">
+            <h3>Replies</h3>
+            {% for comment in thread.thread_comments %}
+                <div class="mt-4 comments">
+                    <span class="d-flex justify-content-between"><span><img src="{{ comment.thread_comment_author.email | gravatar(size=40) }}" alt="" style="border-radius: 50%;"> <h5 style="display: inline">{{ comment.thread_comment_author.name  }}</h5></span> <small class="fs-5">Replied on {{ comment.date }}</small></span>
+                    <div style="margin-left: 35px;text-align: justify">
+                        {{ comment.text|safe  }}
+                        <div class="col px-1 mb-3"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <a class="text-sm text-decoration-none text-black" href="{{ url_for("show_thread_comments",thread=thread.title,comment=comment.id) }}">{{ comment.thread_comments_two|length }} Replys</a> </div>
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for("show_thread_comments",thread=thread.title,comment=comment.id) }}" class="btn btn-primary">Reply</a>
+
+                            {% if current_user.id == comment.author_id %}
+                                <div class="d-inline">
+                                    <a href="{{ url_for("edit_comment_one",comment_id=comment.id,thread_id=thread.id) }}" class="text-decoration-none text-black">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                        </svg></a>
+                                </div>
+
+                            {% else %}
+                                <a href="{{ url_for("report_comment1",comment_id=comment.id) }}" class="text-decoration-none text-black"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-flag" viewBox="0 0 16 16">
+                                    <path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A19.626 19.626 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a19.587 19.587 0 0 0 1.349-.476l.019-.007.004-.002h.001M14 1.221c-.22.078-.48.167-.766.255-.81.252-1.872.523-2.734.523-.886 0-1.592-.286-2.203-.534l-.008-.003C7.662 1.21 7.139 1 6.5 1c-.669 0-1.606.229-2.415.478A21.294 21.294 0 0 0 3 1.845v6.433c.22-.078.48-.167.766-.255C4.576 7.77 5.638 7.5 6.5 7.5c.847 0 1.548.28 2.158.525l.028.01C9.32 8.29 9.86 8.5 10.5 8.5c.668 0 1.606-.229 2.415-.478A21.317 21.317 0 0 0 14 7.655V1.222z"/>
+                                </svg></a>
+                            {% endif %}
+                        {% endif %}
+
+                    </div>
+
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    No replies yet!
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for("static",filename="hide_and_show.js") }}"></script>
+
+{% endblock %}

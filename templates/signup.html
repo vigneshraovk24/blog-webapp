@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}SIGNUP{% endblock %}
+{% block style_link %}<link rel="stylesheet" href="../static/style.css">{% endblock %}
+{% block content %}
+    {% include "nav_bar.html" %}
+  <form  method="POST" class="container">
+    <div class="mb-3 ">
+
+
+        {{ send_otp.hidden_tag() }}
+            <h4 class="text-center">SIGNUP</h4>
+        {{ send_otp.name.label(class="form-label") }} {{ send_otp.name(class="form-control") }}
+      {{ send_otp.email.label(class="form-label") }} {{ send_otp.email(class="form-control") }}
+        {{ send_otp.send_otp(class="btn btn-primary mt-3") }} <br>
+
+    </div>
+
+
+</form>
+{% endblock %}
+

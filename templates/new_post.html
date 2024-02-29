@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}NEW POST{% endblock %}
+{% block content %}
+{% include "nav_bar.html" %}
+    <form style="margin-top: 70px;" method="POST" class="container" enctype="multipart/form-data">
+        <p style="font-weight: bold;font-size: 20px;">Create a  new post</p>
+    <div class="mb-3 ">
+
+         {{ form.hidden_tag() }}
+        {% for message in get_flashed_messages() %}
+
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <br>
+        {% endfor %}
+                {{ form.title.label(class="form-lable") }} {{ form.title(class="form-control") }}
+             {{ form.subtitle.label(class="form-lable") }} {{ form.subtitle(class="form-control") }}
+            {{ form.slug.label(class="form-lable") }} {{ form.slug(class="form-control")  }}
+            {% for err in form.pic.errors %}
+                <span style="color:red">{{ err }}<br></span>
+            {% endfor %}
+             {{ form.pic.label(class="form-lable") }} {{ form.pic(class="form-control")  }}
+            {% for err in form.body.errors %}
+                <span style="color:red">{{ err }}<br></span>
+            {% endfor %}
+               {{ form.body.label(class="form-lable") }} {{ form.body(class="form-control") }}
+        {{ form.submit(class="btn btn-outline-success mt-3") }}
+
+    </div>
+    </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
+
+{% endblock %}

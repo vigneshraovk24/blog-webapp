@@ -1,0 +1,54 @@
+ {# nav bar   #}
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="{{ url_for("index") }}">VBlog</a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="btn btn-outline-success" aria-current="page" href="{{ url_for("discussion") }}">DISCUSSION</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for("dashboard") }}">DASHBOARD</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for("new_post") }}">NEW POST</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for("logout") }}">LOGOUT</a>
+                    </li>
+
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for("login") }}">LOGIN</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for("signup") }}">SIGNUP</a>
+                    </li>
+                {% endif %}
+
+
+            </ul>
+            <form class="d-flex" style="margin-right: 20px;" action="{{ url_for("search") }}" method="post">
+                {{ search_form.hidden_tag() }}
+                {{ search_form.search(class="form-control me-2") }}
+{#                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">#}
+                {{ search_form.submit(class="btn btn-outline-success") }}
+{#                <button class="btn btn-outline-success" type="submit">Search</button>#}
+            </form>
+            <div class="d-flex">
+                <p style="color: white;">{{current_user.name}}</p>
+            </div>
+            
+        </div>
+    </div>
+</nav>
+        {# nav bar end   #}
+
+    
+    <!-- Right elements -->
+<!-- Navbar -->

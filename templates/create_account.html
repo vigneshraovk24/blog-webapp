@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}CREATE ACCOUNT{% endblock %}
+{% block style_link %} <link rel="stylesheet" href="../static/style.css">{% endblock %}
+{% block content %}
+        {% include "nav_bar.html" %}
+
+    <form  method="POST" class="container">
+    <div class="mb-3 ">
+
+         {{ form.hidden_tag() }}
+        {% for message in get_flashed_messages() %}
+
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <br>
+        {% endfor %}
+                <h4 class="text-center">CREATE ACCOUNT</h4>
+                {{ form.name.label(class="form-label") }} {{ form.name(value=value_name,class="form-control") }}
+             {{ form.email.label(class="form-label") }} {{ form.email(value=value_email,class="form-control") }}
+            {{ form.opt.label(class="form-label") }} {{ form.opt(class="form-control")  }}
+               {{ form.password.label(class="form-label") }} {{ form.password(class="form-control") }}
+        {{ form.confirm_password.label(class="form-label") }} {{ form.confirm_password(class="form-control") }}
+        {{ form.signup(class="btn btn-primary mt-3") }}
+
+    </div>
+    </form>
+{% endblock %}
+
+
+
+
+
+
+
+
+

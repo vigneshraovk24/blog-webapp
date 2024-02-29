@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %} DISCUSSION FORUM  {% endblock %}
+{% block style_link %}
+    <link rel="stylesheet" href="{{ url_for("static",filename="discussion_index_style.css") }}">
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+     {# nav bar   #}
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for("index") }}">VBlog</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-success" aria-current="page" href="{{ url_for("index")}}">HOME</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("create_forum") }}">ASK QUESTION</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("logout") }}">LOGOUT</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("login") }}">LOGIN</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("signup")}}">SIGNUP</a>
+                        </li>
+                    {% endif %}
+
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {# nav bar end   #}
+    <div class="container" style="margin-top: 70px;">
+        <div class="row">
+            <!-- Main content -->
+            <div class="col-lg-12 mb-3">
+                <div class="row text-left mb-5">
+                    <div class="col-lg-6 mb-3 mb-sm-0">
+                        <div class="dropdown bootstrap-select form-control form-control-lg bg-white bg-op-9 text-sm w-lg-50" style="width: 100%;">
+                            <select class="form-control form-control-lg bg-white bg-op-9 text-sm w-lg-50" data-toggle="select" tabindex="-98" onchange="window.location.href = this.value;">
+                                <option> Categories </option>
+                                <option value="{{ url_for("discussion_filter",categories="general",sort_by='latest') }}" > General </option>
+                                <option value="{{ url_for("discussion_filter",categories="Sports" ,sort_by='latest') }}"> Sports </option>
+                                <option value="{{ url_for("discussion_filter",categories="Education",sort_by='latest') }}"> Education </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 text-lg-right">
+                        <div class="dropdown bootstrap-select form-control form-control-lg bg-white bg-op-9 ml-auto text-sm w-lg-50" style="width: 100%;">
+                            <select class="form-control form-control-lg bg-white bg-op-9 ml-auto text-sm w-lg-50" data-toggle="select" tabindex="-98" onchange="window.location.href = this.value;">
+                                <option> Filter by </option>
+                                <option value="{{ url_for("discussion_filter",categories=categories,sort_by='latest') }}" > Latest </option>
+                                <option value="{{ url_for("discussion_filter",categories=categories,sort_by='replys') }}" > Replys </option>
+                                <option value="{{ url_for("discussion_filter",categories=categories,sort_by='old') }}"> Old </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of post 1 -->
+                {% if categories == "general" %}
+                    <h4>General</h4>
+                {% elif categories == "Spots" %}
+                    <h4>Spots</h4>
+                {% elif categories == "Education" %}
+                    <h4>Education</h4>
+                {% else %}
+                    <h4>All categories</h4>
+                {% endif %}
+
+                {% for thread in all_threads %}
+
+                    <div class="card row-hover pos-relative py-3 px-3 mb-3 border-warning border-top-0 border-right-0 border-bottom-0 rounded-0">
+                        <div class="row align-items-center">
+                            <div class="col-md-8 mb-3 mb-sm-0">
+                                <h5>
+                                    <a href="{{ url_for("show_thread",thread=thread.title,thread_id=thread.id) }}" class="text-primary">{{ thread.title }}</a>
+                                </h5>
+                                <p class="text-sm"><span class="op-6">Created on</span> <small class="text-black" >{{ thread.date }}</small> <span class="op-6"> by</span> <small class="text-black" >{{ thread.thread_author.name }}</small></p>
+                                <div class="text-sm op-5">
+                                    <a class="text-black mr-2" href="#">{{ thread.hashtags }}</a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 op-7">
+                                <div class="row text-center op-7">
+{#                                    <div class="col px-1"> <i class="ion-connection-bars icon-1x"></i> <span class="d-block text-sm">141 Votes</span> </div>#}
+                                    <div class="col px-1"> <i class="ion-ios-chatboxes-outline icon-1x"></i> <span class="d-block text-sm">{{ thread.thread_comments|length }} Replys</span> </div>
+{#                                    <div class="col px-1"> <i class="ion-ios-eye-outline icon-1x"></i> <span class="d-block text-sm">290 Views</span> </div>#}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger d-flex align-items-center col-lg-12 col-md-12" role="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="Warning:">
+                            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                        </svg>
+                        <div>
+                            No matching result !
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- /End of post 1 -->
+
+
+            </div>
+            <!-- Sidebar content -->
+
+        </div>
+    </div>
+
+
+
+{% endblock %}

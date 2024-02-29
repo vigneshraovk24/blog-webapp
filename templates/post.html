@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{post.title}}{% endblock %}
+{% block style %}
+    <style>
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        p {
+            text-align: justify-all;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    {# nav bar  #}
+    {% include "nav_bar.html" %}
+    <header class="masthead" style="background-image: url('{{post.img_url}}')">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto " style="margin-top: 70px;">
+                    <div class="post-heading">
+                        <h1>{{post.title}}</h1>
+                        <h3 class="subheading">{{post.subtitle}}</h3>
+                        <span class="meta">Posted by
+              {{post.poster.name}}
+              on {{post.date}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+        <div class="container" style="margin-top: 20px;">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <img src="../static/images/{{ post.pic }}" class="img-fluid" alt="...">
+                    {{ post.body|safe }}
+                    <hr>
+
+                    {#comment area#}
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        {{ form.comment_text.label(class="form-lable") }} {{ form.comment_text(class="form-control") }}
+                        {{ form.submit(class="btn btn-outline-success active mt-3") }}
+                    </form>
+                    {{ ckeditor.load(pkg_type="basic") }}
+                    {{ ckeditor.config(name="comment_text") }}
+
+                    {% for comment in post.comments %}
+                        {#               <div class="mt-4 comments">#}
+                        {#                    <span class="d-flex justify-content-between"><span><img src="{{ comment.thread_comment_author.email | gravatar(size=40) }}" alt="" style="border-radius: 50%;"> <h5 style="display: inline">{{ comment.thread_comment_author.name  }}</h5></span> <small class="fs-5">Replied on {{ comment.date }}</small></span>#}
+                        {#                    <div style="margin-left: 35px;text-align: justify">#}
+                        {#                        {{ comment.text|safe  }}#}
+
+                        <div class="mt-4 comments">
+                            <span class="d-flex"><span><img src="{{ comment.comment_author.email | gravatar(size=40) }}" alt="" style="border-radius: 50%;"><h5 style="display: inline; margin-left: 10px">{{ comment.comment_author.name  }}</h5></span></span>
+                            <div style="margin-left: 35px;text-align: justify">
+                                {{ comment.text|safe }}
+                                {% if current_user.is_authenticated %}
+                                    {% if current_user.id == comment.author_id %}
+                                        <a href="{{ url_for("post_comment_delete",id=comment.id) }}" class="text-decoration-none text-black">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                                            </svg>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+        </div>
+    </article>
+{% endblock %}

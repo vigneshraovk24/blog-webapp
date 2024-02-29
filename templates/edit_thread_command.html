@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ thread.title }}{% endblock %}
+{% block style_link %}
+    <link rel="stylesheet" href="{{ url_for("static",filename="thread_post_style.css") }}">
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    {# nav bar   #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for("index") }}">VBlog</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-success" aria-current="page" href="{{ url_for("discussion") }}">DISCUSSION</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("create_forum") }}">ASK QUESTION</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("logout") }}">LOGOUT</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for("login") }}">LOGIN</a>
+                        </li>
+                    {% endif %}
+
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {# nav bar end   #}
+    <div class="col-lg-10 col-md-10 mx-auto mt-2">
+        <div>
+            <span class="d-flex justify-content-between"><span><img src="{{ thread.thread_author.email | gravatar(size=40) }}" alt="" style="border-radius: 50%;"> <h5 style="display: inline">{{ thread.thread_author.name }}</h5></span> <small class="fs-5">created on {{ thread.date }}</small></span>
+            <div style="text-align: justify">
+                <h3>{{ thread.title }}</h3>
+                {{ thread.brief|safe }}
+                <small>{{ thread.hashtags }}</small>
+            </div>
+
+        </div>
+        {% if current_user.id == required_comment.author_id %}
+            <div>
+            <h3>Reply</h3>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+                {% for err in form.comment_text.errors %}
+                <span style="color:red">{{ err }}<br></span>
+                {% endfor %}
+                {{ form.comment_text(class="form-control") }}
+                <a href="{{ url_for("show_thread",thread_id=thread.id,thread=thread.title) }}" class="btn btn-outline-secondary mt-3">Cancel</a>
+                <a href="{{ url_for("delete_comment_one",comment_id=required_comment.id,thread_id=thread.id) }}" class="btn btn-outline-danger mt-3">Delete</a>
+                {{ form.submit(class="btn btn-secondary mt-3") }}
+            </form>
+            {{ ckeditor.load(pkg_type="basic") }}
+            {{ ckeditor.config(name="comment_text") }}
+        </div>
+        {% endif %}
+
+    </div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}NEW THREAD{% endblock %}
+{% block content %}
+    {% include "nav_bar.html" %}
+    <div class="container" style="margin-top: 70px;">
+         <form  method="POST"  enctype="multipart/form-data">
+        <div class="mb-3 ">
+
+            {{ form.hidden_tag() }}
+            {% for message in get_flashed_messages() %}
+
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <br>
+            {% endfor %}
+            {{ form.title.label(class="form-label") }} {{ form.title(class="form-control") }}
+            {% for err in form.brief.errors %}
+                <span style="color:red">{{ err }}<br></span>
+            {% endfor %}
+            {{ form.brief.label(class="form-label") }} {{ form.brief(class="form-control") }}
+            {{ form.categories.label(class="form-label") }} {{ form.categories(class="form-control")  }}
+            {{ form.hashtags.label(class="form-label") }}
+            <small>(separate the tags by ",")</small>
+            {{ form.hashtags(class="form-control") }}
+            {% if is_deletable %}
+                    <a href="{{ url_for("delete_thread",thread_id=required_thread_id) }}" class="btn btn-outline-danger mt-3">Delete</a>
+            {% endif %}
+            {{ form.submit(class="btn btn-outline-success mt-3") }}
+
+        </div>
+    </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='brief') }}
+
+    </div>
+
+
+{% endblock %}
+
